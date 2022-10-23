@@ -1,16 +1,14 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { BucketConstruct } from './stacks/bucket/bucket';
+import { LambdaFunctionConstruct } from './stacks/function/function';
 
 export class LambdaJsonCsvStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
-
-    // example resource
-    // const queue = new sqs.Queue(this, 'LambdaJsonCsvQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const bucketConstruct = new BucketConstruct(this, 'bucket-construct')    
+    const functionConstruct = new LambdaFunctionConstruct(this, 'function-construct', bucketConstruct.bucket.bucketArn)
+  
   }
 }
