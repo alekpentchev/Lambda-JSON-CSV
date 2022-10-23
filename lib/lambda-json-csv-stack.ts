@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { BucketConstruct } from './stacks/bucket/bucket';
-import { LambdaFunctionConstruct } from './stacks/function/function';
+import { BucketConstruct } from './constructs/bucket/bucket';
+import { LambdaFunctionConstruct } from './constructs/function/function';
 
 export class LambdaJsonCsvStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
