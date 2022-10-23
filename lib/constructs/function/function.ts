@@ -6,13 +6,15 @@ import { Duration, Stack } from "aws-cdk-lib";
 import { SES_EMAIL_FROM, SES_REGION } from "../../../env";
 import { S3EventSource } from "aws-cdk-lib/aws-lambda-event-sources";
 import { Bucket, EventType } from "aws-cdk-lib/aws-s3";
+import { ComparisonOperator, Metric } from "aws-cdk-lib/aws-cloudwatch";
 
 export class LambdaFunctionConstruct extends Construct {
     lambdaFunction: NodejsFunction
-
+    
     constructor(scope: Construct, id: string, bucket: Bucket) {
         super(scope, id)
 
+        // Define the Lambda function
         // CDK will bundle the Node.js function together with its dependencies using esbuild
         this.lambdaFunction = new NodejsFunction(this, 'lambda-to-csv', {
             runtime: Runtime.NODEJS_16_X,
@@ -20,6 +22,7 @@ export class LambdaFunctionConstruct extends Construct {
             timeout: Duration.seconds(10),
         })
 
+        // Create policies to attach to Lambda
         const s3GetObjectStatement = new PolicyStatement({
             actions: ['s3:GetObject*'],
             resources: [bucket.bucketArn]
@@ -39,6 +42,7 @@ export class LambdaFunctionConstruct extends Construct {
             ],
         })
 
+        // Add inline policies to the Lambda execution role
         this.lambdaFunction.role?.attachInlinePolicy(
             new Policy(this, 'lambda-get-s3', {
                 statements: [
@@ -48,11 +52,27 @@ export class LambdaFunctionConstruct extends Construct {
             })
         )
 
+        // Add Lambda event source to be triggered by
+        // new object created in an S3 bucket
         const s3LambdaEventSource = new S3EventSource(
             bucket,
             { events: [EventType.OBJECT_CREATED_PUT] }
         )
 
         this.lambdaFunction.addEventSource(s3LambdaEventSource)
+    
+        // Create CloudWatch metrics for Lambda
+        const errorExecutions = this.lambdaFunction.metricErrors({
+            period: Duration.minutes(1)
+        })
+
+        // Create an alarm for Lambda errors
+        errorExecutions.createAlarm(this, 'lambda-invocations-errors-alarm', {
+            alarmDescription: 'Alarm if Lambda function errors exceed 1',
+            alarmName: 'Lambda Errors',
+            threshold: 1,
+            evaluationPeriods: 1,
+            comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD
+        })
     }
 }
