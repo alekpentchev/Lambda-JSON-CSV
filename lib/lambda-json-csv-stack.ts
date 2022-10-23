@@ -8,7 +8,7 @@ export class LambdaJsonCsvStack extends cdk.Stack {
     super(scope, id, props);
 
     const bucketConstruct = new BucketConstruct(this, 'bucket-construct')    
-    const functionConstruct = new LambdaFunctionConstruct(this, 'function-construct', bucketConstruct.bucket.bucketArn)
+    const functionConstruct = new LambdaFunctionConstruct(this, 'function-construct', bucketConstruct.bucket)
   
   }
 }

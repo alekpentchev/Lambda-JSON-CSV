@@ -4,23 +4,25 @@ import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Policy, PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { Duration, Stack } from "aws-cdk-lib";
 import { SES_EMAIL_FROM, SES_REGION } from "../../../env";
+import { S3EventSource } from "aws-cdk-lib/aws-lambda-event-sources";
+import { Bucket, EventType } from "aws-cdk-lib/aws-s3";
 
 export class LambdaFunctionConstruct extends Construct {
     lambdaFunction: NodejsFunction
 
-    constructor(scope: Construct, id: string, bucketArn: string) {
+    constructor(scope: Construct, id: string, bucket: Bucket) {
         super(scope, id)
 
         // CDK will bundle the Node.js function together with its dependencies using esbuild
         this.lambdaFunction = new NodejsFunction(this, 'lambda-to-csv', {
             runtime: Runtime.NODEJS_16_X,
             memorySize: 1024,
-            timeout: Duration.seconds(3)
+            timeout: Duration.seconds(10),
         })
 
         const s3GetObjectStatement = new PolicyStatement({
             actions: ['s3:GetObject*'],
-            resources: [bucketArn]
+            resources: [bucket.bucketArn]
         })
 
         // To let Lambda send emails from your email using SES
@@ -45,5 +47,12 @@ export class LambdaFunctionConstruct extends Construct {
                 ]
             })
         )
+
+        const s3LambdaEventSource = new S3EventSource(
+            bucket,
+            { events: [EventType.OBJECT_CREATED_PUT] }
+        )
+
+        this.lambdaFunction.addEventSource(s3LambdaEventSource)
     }
 }
