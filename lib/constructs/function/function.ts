@@ -22,6 +22,9 @@ export class LambdaFunctionConstruct extends Construct {
             timeout: Duration.seconds(10),
         })
 
+        // add environment variables to lambda function
+        this.lambdaFunction.addEnvironment('BUCKET', bucket.bucketName)
+
         // Create policies to attach to Lambda
         const s3GetObjectStatement = new PolicyStatement({
             actions: ['s3:GetObject*'],
