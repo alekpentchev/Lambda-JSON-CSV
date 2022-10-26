@@ -4,6 +4,10 @@
 node_modules
 .env
 
+# Lambda related test files
+output.json
+dummy*.json
+
 # CDK asset staging directory
 .cdk.staging
 cdk.out
