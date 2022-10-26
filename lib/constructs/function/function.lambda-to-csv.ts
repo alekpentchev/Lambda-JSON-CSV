@@ -1,14 +1,16 @@
+import { S3Event } from "aws-lambda";
 import s3 from "aws-sdk/clients/s3";
 import json2csv from "json2csv";
 
-export const handler = async (event) => {
+export const handler = async (event: S3Event) => {
+   console.log('Starting lambda function');
+
    // get bucket name and key from event
    const bucketName = event.Records[0].s3.bucket.name;
-   const key = event.Records[0].s3.object.key;   
+   const key = event.Records[0].s3.object.key;
 
-   if (!process.env.BUCKET || !process.env.KEY) {
-      throw new Error("Missing environment variables for Bucket name and Key name");
-   }
+   console.log('bucketName: ', bucketName);
+   console.log('key: ', key);
 
    const s3Client = new s3();
 
