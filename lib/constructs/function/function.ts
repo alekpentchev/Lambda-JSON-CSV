@@ -6,7 +6,7 @@ import { Duration, Stack } from "aws-cdk-lib";
 import { S3EventSource } from "aws-cdk-lib/aws-lambda-event-sources";
 import { Bucket, EventType } from "aws-cdk-lib/aws-s3";
 import { ComparisonOperator, Metric } from "aws-cdk-lib/aws-cloudwatch";
-import { SES_REGION, SES_EMAIL_FROM } from "../../../env";
+import { SES_REGION, SES_EMAIL_FROM, SES_EMAIL_TO } from "../../../env";
 
 export class LambdaFunctionConstruct extends Construct {
     lambdaFunction: NodejsFunction
@@ -23,6 +23,12 @@ export class LambdaFunctionConstruct extends Construct {
             bundling: {
                 externalModules: ['aws-sdk'],
                 nodeModules: ['json2csv'],
+            },
+            environment: {
+                SES_REGION,
+                SES_EMAIL_FROM,
+                SES_EMAIL_TO ,
+                SES_IDENTITY_ARN: `arn:aws:ses:${Stack.of(this).region}:${Stack.of(this).account}:identity/${SES_EMAIL_FROM}`,
             }
         })
 
