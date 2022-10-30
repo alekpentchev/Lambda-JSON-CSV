@@ -28,7 +28,7 @@ export class LambdaFunctionConstruct extends Construct {
         // Create policies to attach to Lambda
         const s3GetObjectStatement = new PolicyStatement({
             actions: ['s3:GetObject*'],
-            resources: [bucket.bucketArn]
+            resources: [bucket.bucketArn, `${bucket.bucketArn}/*`]
         })
 
         // To let Lambda send emails from your email using SES
