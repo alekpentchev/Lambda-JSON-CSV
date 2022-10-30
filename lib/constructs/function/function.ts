@@ -20,6 +20,10 @@ export class LambdaFunctionConstruct extends Construct {
             runtime: Runtime.NODEJS_16_X,
             memorySize: 1024,
             timeout: Duration.seconds(10),
+            bundling: {
+                externalModules: ['aws-sdk'],
+                nodeModules: ['json2csv'],
+            }
         })
 
         // add environment variables to lambda function
