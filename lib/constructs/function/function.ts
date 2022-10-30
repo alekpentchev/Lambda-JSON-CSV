@@ -3,10 +3,10 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Policy, PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { Duration, Stack } from "aws-cdk-lib";
-import { SES_EMAIL_FROM, SES_REGION } from "../../../env";
 import { S3EventSource } from "aws-cdk-lib/aws-lambda-event-sources";
 import { Bucket, EventType } from "aws-cdk-lib/aws-s3";
 import { ComparisonOperator, Metric } from "aws-cdk-lib/aws-cloudwatch";
+import { SES_REGION, SES_EMAIL_FROM } from "../../../env";
 
 export class LambdaFunctionConstruct extends Construct {
     lambdaFunction: NodejsFunction
@@ -59,7 +59,7 @@ export class LambdaFunctionConstruct extends Construct {
         // new object created in an S3 bucket
         const s3LambdaEventSource = new S3EventSource(
             bucket,
-            { events: [EventType.OBJECT_CREATED_PUT] }
+            { events: [EventType.OBJECT_CREATED_PUT, EventType.OBJECT_CREATED_POST] }
         )
 
         this.lambdaFunction.addEventSource(s3LambdaEventSource)
