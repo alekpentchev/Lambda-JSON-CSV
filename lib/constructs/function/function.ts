@@ -63,7 +63,10 @@ export class LambdaFunctionConstruct extends Construct {
         // new object created in an S3 bucket
         const s3LambdaEventSource = new S3EventSource(
             bucket,
-            { events: [EventType.OBJECT_CREATED_PUT, EventType.OBJECT_CREATED_POST] }
+            { 
+                events: [EventType.OBJECT_CREATED_PUT, EventType.OBJECT_CREATED_POST],
+                filters: [{suffix: ".json"}]
+            }
         )
 
         this.lambdaFunction.addEventSource(s3LambdaEventSource)
