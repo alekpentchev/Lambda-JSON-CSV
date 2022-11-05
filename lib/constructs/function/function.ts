@@ -22,7 +22,7 @@ export class LambdaFunctionConstruct extends Construct {
             timeout: Duration.seconds(10),
             bundling: {
                 externalModules: ['aws-sdk'],
-                nodeModules: ['json2csv'],
+                nodeModules: ['json2csv', 'nodemailer'],
             },
             environment: {
                 SES_REGION,
